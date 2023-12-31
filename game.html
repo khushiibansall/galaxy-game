@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <title>Galaxy Game</title>
+    <style>
+        body {
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            overflow: hidden;
+            background-image: url('https://source.unsplash.com/E0AHdsENmDg'); /* Add your galaxy background image path here */
+            background-size: cover;
+        }
+
+        canvas {
+            border: 2px solid #00ffcc;
+            background-color: #000;
+            display: block;
+        }
+
+        button {
+            margin-top: 10px;
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #00ffcc;
+            color: #000;
+            border: none;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #00cc99;
+        }
+
+        #endScreen {
+            display: none;
+            text-align: center;
+            background-color: rgba(0, 0, 0, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #00ffcc; /* Set the text color to match the canvas border color */
+        }
+    </style>
+</head>
+<body>
+    <canvas id="gameCanvas" width="480" height="320"></canvas>
+    <button id="startButton">Start Game</button>
+    <div id="endScreen">
+        <h1>Game Over</h1>
+        <p>Your Score: <span id="score" style="color: #00ffcc;">0</span></p>
+        <button id="restartButton">Restart</button>
+    </div>
+    <div id="startMessage">
+        <p style="color: #fff; font-size: 24px;">LET'S PLAY Galactic Explorer 🚀</p>
+    </div>
+    
+    <script>
+        var canvas = document.getElementById("gameCanvas");
+        var ctx = canvas.getContext("2d");
+
+        var paddleWidth = 75;
+        var paddleHeight = 10;
+        var paddleX = (canvas.width - paddleWidth) / 2;
+
+        var ballRadius = 10;
+        var ballX = canvas.width / 2;
+        var ballY = canvas.height - 30;
+        var ballSpeedX = 2;
+        var ballSpeedY = -2;
+
+        var rightPressed = false;
+        var leftPressed = false;
+
+        var gameStarted = false;
+        var gameEnded = false;
+        var score = 0;
+
+        var startButton = document.getElementById("startButton");
+        var endScreen = document.getElementById("endScreen");
+        var restartButton = document.getElementById("restartButton");
+        var scoreDisplay = document.getElementById("score");
+
+        startButton.addEventListener("click", startGame);
+        restartButton.addEventListener("click", restartGame);
+
+        document.addEventListener("keydown", keyDownHandler, false);
+        document.addEventListener("keyup", keyUpHandler, false);
+
+        function keyDownHandler(e) {
+            if (e.key == "Right" || e.key == "ArrowRight") {
+                rightPressed = true;
+            } else if (e.key == "Left" || e.key == "ArrowLeft") {
+                leftPressed = true;
+            }
+        }
+
+        function keyUpHandler(e) {
+            if (e.key == "Right" || e.key == "ArrowRight") {
+                rightPressed = false;
+            } else if (e.key == "Left" || e.key == "ArrowLeft") {
+                leftPressed = false;
+            }
+        }
+
+        function drawPaddle() {
+            ctx.beginPath();
+            ctx.rect(paddleX, canvas.height - paddleHeight, paddleWidth, paddleHeight);
+            ctx.fillStyle = "#0095DD";
+            ctx.fill();
+            ctx.closePath();
+        }
+
+        function drawRocket() {
+            // Use Font Awesome icon instead of an image
+            ctx.font = "30px FontAwesome";
+            ctx.fillStyle = "#0095DD";
+            ctx.fillText("\uf135", ballX - 15, ballY + 10); // Adjust the position as needed
+        }
+
+        function drawStartMessage() {
+            // Display the message inside the canvas
+            ctx.font = "24px Arial";
+            ctx.fillStyle = "#fff";
+            ctx.fillText("LET'S PLAY Galactic Explorer 🚀", canvas.width / 2 - 190, canvas.height / 2);
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            drawRocket();
+            drawPaddle();
+
+            if (!gameStarted) {
+                // Draw the start message before the game starts
+                drawStartMessage();
+            } else {
+                if (rightPressed && paddleX < canvas.width - paddleWidth) {
+                    paddleX += 7;
+                } else if (leftPressed && paddleX > 0) {
+                    paddleX -= 7;
+                }
+
+                ballX += ballSpeedX;
+                ballY += ballSpeedY;
+
+                if (ballX + ballRadius > canvas.width || ballX - ballRadius < 0) {
+                    ballSpeedX = -ballSpeedX;
+                }
+                if (ballY - ballRadius < 0) {
+                    ballSpeedY = -ballSpeedY;
+                } else if (ballY + ballRadius > canvas.height) {
+                    if (ballX > paddleX && ballX < paddleX + paddleWidth) {
+                        ballSpeedY = -ballSpeedY;
+                        score++;
+                    } else {
+                        gameEnded = true;
+                    }
+                }
+            }
+
+            if (!gameEnded) {
+                requestAnimationFrame(draw);
+            } else {
+                endGame();
+            }
+        }
+
+        function startGame() {
+            gameStarted = true;
+            startButton.style.display = "none";
+            draw();
+        }
+
+        function endGame() {
+            endScreen.style.display = "block";
+            scoreDisplay.textContent = score;
+        }
+
+        function restartGame() {
+            gameStarted = false;
+            gameEnded = false;
+            score = 0;
+            paddleX = (canvas.width - paddleWidth) / 2;
+            ballX = canvas.width / 2;
+            ballY = canvas.height - 30;
+            ballSpeedX = 2;
+            ballSpeedY = -2;
+            startButton.style.display = "block";
+            endScreen.style.display = "none";
+            draw();
+        }
+    </script>
+</body>
+</html>
