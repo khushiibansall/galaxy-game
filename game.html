@@ -3,52 +3,7 @@
 <head>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <title>Galaxy Game</title>
-    <style>
-        body {
-            margin: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            overflow: hidden;
-            background-image: url('https://source.unsplash.com/E0AHdsENmDg'); /* Add your galaxy background image path here */
-            background-size: cover;
-        }
-
-        canvas {
-            border: 2px solid #00ffcc;
-            background-color: #000;
-            display: block;
-        }
-
-        button {
-            margin-top: 10px;
-            padding: 10px 20px;
-            font-size: 16px;
-            background-color: #00ffcc;
-            color: #000;
-            border: none;
-            cursor: pointer;
-        }
-
-        button:hover {
-            background-color: #00cc99;
-        }
-
-        #endScreen {
-            display: none;
-            text-align: center;
-            background-color: rgba(0, 0, 0, 0.8);
-            padding: 20px;
-            border-radius: 10px;
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            color: #00ffcc; /* Set the text color to match the canvas border color */
-        }
-    </style>
+    
 </head>
 <body>
     <canvas id="gameCanvas" width="480" height="320"></canvas>
